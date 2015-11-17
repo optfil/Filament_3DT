@@ -1,0 +1,6 @@
+#ifndef FINALIZATION_H_INCLUDED
+#define FINALIZATION_H_INCLUDED
+
+void Finalize();
+
+#endif  // FINALIZATION_H_INCLUDED

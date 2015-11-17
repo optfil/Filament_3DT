@@ -1,0 +1,13 @@
+#!/bin/bash
+
+module load openmpi/1.8.4-icc
+module load intel/15.0.090
+
+RESULTS_DIR="Results"
+
+mkdir "$RESULTS_DIR"
+mkdir "$RESULTS_DIR/Fluence"
+mkdir "$RESULTS_DIR/Plasma"
+mkdir "$RESULTS_DIR/Field"
+
+sbatch -n 64 -p test -t 15 ompi ./fil.e "$RESULTS_DIR"

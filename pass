@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRATCH_PATH=$(echo $(pwd) | sed 's/Programs/_scratch/g')
+
+rm -rf "$SCRATCH_PATH"
+mkdir -p "$SCRATCH_PATH"
+
+cp -R *.{e,tf} run "$SCRATCH_PATH" 2>>/dev/null
+
+cd "$SCRATCH_PATH"
