@@ -1,6 +1,6 @@
 #include "calculation.h"
 #include "parameters.h"
-#include <fftw_mpi.h>
+
 /*
 void DampingField(complex<double> *A, size_t n_x, size_t Ntotal, double rnb = 8., double degree = 4.)
 {

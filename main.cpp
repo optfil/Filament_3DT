@@ -1,10 +1,5 @@
-#include <mpi.h>
-#include <fftw_mpi.h>
-#include <complex>
-#include <cstring>
 #include <cstdlib>
-#include <cstdio>
-#include <cmath>
+#include <fstream>
 
 #include "misc.h"
 #include "parameters.h"
@@ -12,13 +7,12 @@
 #include "propagation.h"
 #include "finalization.h"
 
-//==========//============//==========//==========//==========//
 
 void GetParam(int argc, char **argv)
 {
 	if (argc < 2)
 		std::exit(1);  // not enough arguments
-	strcpy(dir_name, argv[1]);
+	dir_name = std::string(argv[1]);
 
 	local_nx = NN / size;
 	min_dxdy = grid_size / NN;
@@ -31,29 +25,30 @@ void GetParam(int argc, char **argv)
 
 void OutParam()
 {
-	char buf[1024];
-	sprintf(buf, "%s/param.txt", dir_name);
-	FILE *p_f = fopen(buf, "wt+");
+	std::string str(dir_name + "/param.txt");
+	std::ofstream f(str);
+	if (!f)
+	{
+		std::cout << "Can't open file " << str << "!\n";
+		exit(1);
+	}
+	f << "NN = " << NN << "\n";
+	f << "rad = " << rad << " cm\n";
+	f << "grid_size = " << grid_size << " cm\n";
+	f << "min_dxdy = " << min_dxdy * 10000 <<" um\n\n";
 	
-	fprintf(p_f, "NN = %d\n", NN);
-	fprintf(p_f, "rad = %f cm\n", rad);
-	fprintf(p_f, "grid_size = %f cm\n", grid_size);
-	fprintf(p_f, "min_dxdy = %f um\n\n", min_dxdy * 10000);
-	
-	fprintf(p_f, "NN_t = %d\n", NN_t);
-	fprintf(p_f, "rad_t = %f fs\n", rad_t);
-	fprintf(p_f, "grid_size_t = %f fs\n", grid_size_t);
-	fprintf(p_f, "min_dt = %f fs\n\n", min_dt);
+	f << "NN_t = " << NN_t << "\n";
+	f << "rad_t = " << rad_t << " fs\n";
+	f << "grid_size_t = " << grid_size_t << " fs\n";
+	f << "min_dt = " << min_dt << " fs\n\n";
 
-	fprintf(p_f, "lambda = %f um\n", lambda*1e4);
-	fprintf(p_f, "diffraction length (grid) = %f cm\n", ldiff);
-	fprintf(p_f, "diffraction length (beam) = %f cm\n", ldiff * sqr(rad / grid_size));
-	fprintf(p_f, "dispersion length (grid) = %f cm\n", ldisp);
-	fprintf(p_f, "dispersion length (pulse) = %f cm\n\n", ldisp * sqr(rad_t / grid_size_t));
+	f << "lambda = " << lambda*1e4 << " um\n";
+	f << "diffraction length (grid) = " << ldiff << " cm\n";
+	f << "diffraction length (beam) = " << ldiff * sqr(rad / grid_size) << " cm\n";
+	f << "dispersion length (grid) = " << ldisp << " cm\n";
+	f << "dispersion length (pulse) = " << ldisp * sqr(rad_t / grid_size_t) << " cm\n\n";
 	
-	fprintf(p_f, "number of processes = %d\n", size);
-	
-	fclose(p_f);
+	f << "number of processes  = " << size << "\n";
 }
 
 int main(int argc, char **argv)

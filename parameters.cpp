@@ -1,6 +1,7 @@
 #include "parameters.h"
 
-char dir_name[1024];
+
+std::string dir_name;
 
 size_t local_nx;
 double min_dxdy;
@@ -14,4 +15,3 @@ double *fluence;
 
 int rank, size;
 fftwnd_mpi_plan plan_f, plan_b;
-char param_name[1024];

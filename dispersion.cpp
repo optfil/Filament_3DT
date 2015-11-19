@@ -1,6 +1,6 @@
 #include "dispersion.h"
-#include "misc.h"
 #include "parameters.h"
+
 
 const double c_light = 299792458*1e2;		// speed of light in vacuum, cm/s
 

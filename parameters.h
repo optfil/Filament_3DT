@@ -2,13 +2,14 @@
 #define PARAMETERS_H_INCLUDED
 
 #include <cstddef>
-#include <complex>
+#include <string>
 #include <mpi.h>
-#include <fftw_mpi.h>	
+#include <fftw_mpi.h>
 
 #include "misc.h"
 
-extern char dir_name[1024];									// series directory
+
+extern std::string dir_name;									// series directory
 
 const size_t NN = 1024;      									// whole number of points, square grid
 extern size_t local_nx;											// number of rows for a process
@@ -35,7 +36,5 @@ extern double *fluence;										// fluence - integral of intensity over time in
 
 extern int rank, size; 										// rank of process and size of communicator
 extern fftwnd_mpi_plan plan_f, plan_b;							// Fourier plans
-
-extern char param_name[1024];	// name of log file, result file and file with parameters
 
 #endif  // PARAMETERS_H_INCLUDED

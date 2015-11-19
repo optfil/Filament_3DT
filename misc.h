@@ -1,6 +1,9 @@
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
 
+#include <complex>
+
+
 template <typename T>
 inline T sqr(T x)
 {

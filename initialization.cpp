@@ -1,7 +1,7 @@
 #include "dispersion.h"
 #include "parameters.h"
 #include "initialization.h"
-#include <fftw_mpi.h>
+
 
 void CheckParametres()
 {/*

@@ -2,14 +2,14 @@
 #include "initialization.h"
 #include "parameters.h"
 #include "calculation.h"
-#include <mpi.h>
-#include <cstdio>
-#include <cstddef>
-#include <complex>
+#include <sstream>
+#include <fstream>
+#include <iomanip>
 
-double cur_z;
-double max_phase, global_max_phase, max_I, global_max_I, max_F, global_max_F;
-long int sch;
+
+static double cur_z;
+static double max_phase, global_max_phase, max_I, global_max_I, max_F, global_max_F;
+static long int sch;
 
 
 void Tact()
@@ -50,15 +50,17 @@ void Save()
 {
 	if (rank == size/2)
 	{
-		char file_name[1024];
-		sprintf(file_name, "%s/Field/intensity%.6ld.bin", dir_name, sch);
-		FILE *p_f = fopen(file_name, "w+t");
+		std::ostringstream ss;
+		ss << dir_name << "/Field/intensity" << std::setw(6) << std::setfill('0') << sch << ".bin";
+		std::ofstream f(ss.str());
+		
 		for (size_t k = 0; k < NN_t; ++k)
-			fprintf(p_f, "%d %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g %.6g\n", 
-		                 k, cur_z,
-						 EEE[NN*NN_t/2 + k].real(), EEE[NN*NN_t/2 + k].imag(), norm(EEE[NN*NN_t/2 + k]), atan2(EEE[NN*NN_t/2 + k].imag(), EEE[NN*NN_t/2 + k].real()), 
-						 direct(cur_z, (double)k/(NN_t - 1.) - 1./2.).real(), direct(cur_z, (double)k/(NN_t - 1.) - 1./2.).imag(), norm(direct(cur_z, (double)k/(NN_t - 1.) - 1./2.)), atan2(direct(cur_z, (double)k/(NN_t - 1.) - 1./2.).imag(), direct(cur_z, (double)k/(NN_t - 1.) - 1./2.).real()));
-		fclose(p_f);
+		{
+			std::complex<double> field_e = EEE[NN*NN_t/2 + k], dir = direct(cur_z, (double)k/(NN_t - 1.) - 1./2.);
+			f << k << ' ' << cur_z << ' ' 
+		      << std::real(field_e) << ' ' << std::imag(field_e) << ' ' << std::norm(field_e) << ' ' << std::arg(field_e) << ' ' 
+			  << std::real(dir)     << ' ' << std::imag(dir)     << ' ' << std::norm(dir)     << ' ' << std::arg(dir)     << '\n';
+		}
 	}
 
 /*	complex<double> *buf;
@@ -80,14 +82,12 @@ void Propagate()
 	InitField(EEE, local_nx, NN, NN_t, grid_size, rad, grid_size_t, rad_t);
 	MPI_Barrier(MPI_COMM_WORLD);
 	
-	char log_name[128];
-	sprintf(log_name, "%s/log.txt", dir_name);
+	std::string log_name(dir_name + "log.txt");
 	
 	if (rank == 0)
 	{
-		FILE *p_log = fopen(log_name, "a+t");
-		fprintf(p_log, "iteration cur_z z_step phase intensity fluence\n");
-		fclose(p_log);
+		std::ofstream log(log_name, std::ios_base::app);
+		log << "iteration cur_z z_step phase intensity fluence\n";
 	}
 	
 	sch = 0;
@@ -104,9 +104,8 @@ void Propagate()
 		
 		if (rank == 0)
 		{
-			FILE *p_log = fopen(log_name, "a+t");
-			fprintf(p_log, "%.4ld %.6g %.6g %.6g %.6g %.6g\n", sch, cur_z * ldiff, dz * ldiff, global_max_phase, global_max_I, global_max_F);
-			fclose(p_log);
+			std::ofstream log(log_name, std::ios_base::app);
+			log << sch << " " << cur_z*ldiff << " " << dz*ldiff << " " << global_max_phase << " " << global_max_I << " " << global_max_F << "\n";
 		}
 
 //		if ((global_max_phase > PHASE_THRESHOLD_HIGH) || (global_max_phase < PHASE_THRESHOLD_LOW)) dz *= PHASE_THRESHOLD_LOW/global_max_phase;

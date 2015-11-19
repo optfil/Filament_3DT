@@ -1,7 +1,5 @@
 #include "parameters.h"
-#include <fftw_mpi.h>
 
-//==========//============//==========//==========//==========//
 
 void Finalize()
 {
